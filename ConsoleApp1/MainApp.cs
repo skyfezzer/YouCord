@@ -12,7 +12,7 @@
         private DiscordSocketClient? _client;
         private readonly CommandService _commands;
         private readonly IServiceProvider _services;
-
+       
         public MainApp()
         {
             _commands = new CommandService();
@@ -36,7 +36,13 @@
             _client.Log += Log;
 
             // Authenticate the bot using the Discord.NET library
-            string token = "NDU3NDU0MjgxMTg5MDk3NDcz.GvUFjy.rF89mAed4ThNpsJYBWQ7KfYCOApV0l6tpVol1M";
+            string? token = Environment.GetEnvironmentVariable("YouCordToken");
+            if(token==null)
+            {
+                await Log(new LogMessage(LogSeverity.Error, this.ToString(), "No token found at Env. Variable called \"YouCordToken\""));
+                await Task.Delay(3000);
+                return;
+            }
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await _client.SetGameAsync("YouTube | !y");
